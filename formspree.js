@@ -1,35 +1,27 @@
-var $contactForm = $('#contact-form');
+$(document).ready(function() {
+  $('#contact-form').submit(function(e) {
+      var name = $('#inputName')
+      var email = $('#inputEmail')
+      var message = $('#inputMessage')
 
-$contactForm.submit(function(e) {
-	e.preventDefault();
-	var $submit = $('input:submit', $contactForm);
-	var defaultSubmitText = $submit.val();
+      if(name.val() == "" || email.val() == "" || message.val() == "") {
+        $('.submit-fail').fadeToggle(400);
+        return false;
+      }
+      else {
+        $.ajax({
+          method: 'POST',
+          url: '//formspree.io/your@email.com',
+          data: $('#contact-form').serialize(),
+          datatype: 'json'
+        });
+        e.preventDefault();
+        $(this).get(0).reset();
+        $('.submit-success').fadeToggle(400);
+      }
+    });
 
-	$.ajax({
-		url: '//formspree.io/itony215@gmail.com',
-		method: 'POST',
-		data: $(this).serialize(),
-		dataType: 'json',
-		beforeSend: function() {
-			//$contactForm.append('<div class="alert alert--loading">Sending message…</div>');
-			$submit.attr('disabled', true).val('Sending message…');
-		},
-		success: function(data) {
-			//$contactForm.append('<div class="alert alert--success">Message sent!</div>');
-			$submit.val('Message sent!');
-			setTimeout(function() {
-				//$('.alert--success').remove();
-				$submit.attr('disabled', false).val(defaultSubmitText);
-			}, 5000);
-		},
-		error: function(err) {
-			//$contactForm.find('.alert--loading').hide();
-			//$contactForm.append('<div class="alert alert--error">Ops, there was an error.</div>');
-			$submit.val('Ops, there was an error.');
-			setTimeout(function() {
-				//$('.alert--error').remove();
-				$submit.attr('disabled', false).val(defaultSubmitText);
-			}, 5000);
-		}
-	});
+  $('.submit-fail, .submit-success').click(function() {
+    $(this).hide();
+  })
 });
